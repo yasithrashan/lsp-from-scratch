@@ -1,0 +1,17 @@
+{
+  "name": "lsp-from-scratch",
+  "description": "lsp-from-scratch",
+  "version": "1.0.0",
+  "author": "yasithrashan",
+  "license": "MIT",
+  "engines": {
+    "node": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yasithrashan/lsp-from-scratch"
+  },
+  "dependencies": {
+
+  }
+}
