@@ -11,10 +11,10 @@ function activate(context) {
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
     const serverOptions = {
-        run: { module: serverModule, transport: node_1.TransportKind.ipc },
+        run: { module: serverModule, transport: node_1.TransportKind.stdio },
         debug: {
             module: serverModule,
-            transport: node_1.TransportKind.ipc,
+            transport: node_1.TransportKind.stdio,
         },
     };
     // Options to control the language client
@@ -27,7 +27,7 @@ function activate(context) {
         },
     };
     // Create the language client and start the client.
-    client = new node_1.LanguageClient("REPLACE_ME language-server-id", "REPLACE_ME language server name", serverOptions, clientOptions);
+    client = new node_1.LanguageClient("language-server-demo", "language-server-demo", serverOptions, clientOptions);
     // Start the client. This will also launch the server
     client.start();
 }
