@@ -1,24 +1,36 @@
 import log from "./log";
 import { initialize } from "./methods/initialize";
+import { completion } from "./methods/textDocument/completion";
+import { didChanage } from "./methods/textDocument/didChange";
 
 interface Message {
     jsonrpc: string;
 }
 
+export interface NotificationMessage extends Message {
+    method: string;
+    params?: unknown[] | object;
+}
 export interface RequestMessage extends Message {
-
     id: number | string;
     method: string;
     params?: unknown[] | object;
 }
 
-type RequestMethod = (message: RequestMessage) => unknown;
+type RequestMethod = (
+    message: RequestMessage
+) => ReturnType<typeof initialize> | ReturnType<typeof completion>;
 
-const methodLookup: Record<string, RequestMethod> = {
+type NotificationMethod = (message: NotificationMessage) => void;
+
+const methodLookup: Record<string, RequestMethod | NotificationMethod> = {
     initialize,
+    "textDocument/completion": completion,
+    "textDocument/didChange": didChanage,
+
 }
 
-const respond = (id: RequestMessage['id'], result: unknown) => {
+const respond = (id: RequestMessage['id'], result: object | null) => {
     const message = JSON.stringify({ id, result });
     const messageLength = Buffer.byteLength(message, "utf8");
     const header = `Content-Length: ${messageLength}\r\n\r\n`
@@ -49,9 +61,13 @@ process.stdin.on("data", (chunk) => {
         log.write({ id: message.id, method: message.method })
 
         const method = methodLookup[message.method]
-        
+
         if (method) {
-            respond(message.id, method(message));
+            const result = method(message);
+
+            if (result !== undefined) {
+                respond(message.id, result);
+            }
         }
 
         // Remove the processed message from the buffer
