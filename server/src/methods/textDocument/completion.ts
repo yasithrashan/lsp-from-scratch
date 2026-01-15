@@ -1,6 +1,7 @@
 import { RequestMessage } from "../../server";
 import { documents, TextDocumentIdentifier } from "../../documents";
 import * as fs from "fs";
+import { Position } from "../../type";
 
 const MAX_LENGTH = 1000;
 
@@ -13,11 +14,6 @@ type CompletionItem = {
 interface CompletionList {
     isIncomplete: boolean;
     items: CompletionItem[];
-}
-
-interface Position {
-    line: number;
-    character: number;
 }
 
 interface TextDocumentPositionParams {
@@ -36,7 +32,7 @@ export const completion = (message: RequestMessage): CompletionList | null => {
     }
     const currentLine = content?.split("\n")[params.position.line];
     const lineUntilCursor = currentLine.slice(0, params.position.character);
-    const currentPrefix = lineUntilCursor.replace(/.*W(.*?)/, "$1");
+    const currentPrefix = lineUntilCursor.replace(/.*\W(.*?)/, "$1");
 
     const items = words
         .filter((word) => {
